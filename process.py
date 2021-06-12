@@ -24,7 +24,7 @@ class TextProcessor:
     source_id = text['source_id']
     content = text['content']
     author = text['author']
-    date = text['date']
+    date = text.get('date')
 
 
     self.save(id, content, author, date, people, gpe, tokens, source_id)
@@ -33,11 +33,11 @@ class TextProcessor:
     payload = {
       'content': content,
       'author': author,
-      'date': date,
       'people': people,
       'gpe': gpe,
       'tokens': tokens,
       'source_id': source_id
     }
+    if date: payload['date'] = date
 
     self.elastic.save(payload, id)
