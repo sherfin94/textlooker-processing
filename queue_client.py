@@ -10,14 +10,17 @@ class Queue:
       'bootstrap.servers': 'localhost:9092',
       'group.id': "textlooker",
       'enable.auto.commit': False,
-      'auto.offset.reset': 'latest'
+      'auto.offset.reset': 'earliest'
     }
 
     self.consumer = Consumer(conf)
 
+  def wait_for_connection(self):
+    self.consumer.subscribe(['textlooker'])
+
   def run(self):
     try:
-      self.consumer.subscribe(['textlooker'])
+      self.wait_for_connection()
 
       while self.running:
         message = self.consumer.poll(timeout=1.0)
@@ -33,6 +36,7 @@ class Queue:
         else:
           text = json.loads(message.value())
           self.process_text(text)
+          self.consumer.commit()
     finally:
       # Close down consumer to commit final offsets.
       self.consumer.close()

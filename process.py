@@ -17,8 +17,8 @@ class TextProcessor:
   
   def process(self, text):
     doc = self.nlp(text['content'])
-    people = [entity.text for entity in doc.ents if entity.label_ == 'PERSON']
-    gpe = [entity.text for entity in doc.ents if entity.label_ == 'GPE']
+    people = list(set([entity.text for entity in doc.ents if entity.label_ == 'PERSON']))
+    gpe = list(set([entity.text for entity in doc.ents if entity.label_ == 'GPE']))
     tokens = self.tokens(doc)
     id = text['id']
     source_id = text['source_id']
@@ -26,11 +26,11 @@ class TextProcessor:
     author = text['author']
     date = text['date']
 
+
     self.save(id, content, author, date, people, gpe, tokens, source_id)
 
   def save(self, id, content, author, date, people, gpe, tokens, source_id):
     payload = {
-      'id': id,
       'content': content,
       'author': author,
       'date': date,
@@ -40,4 +40,4 @@ class TextProcessor:
       'source_id': source_id
     }
 
-    self.elastic.save(payload)
+    self.elastic.save(payload, id)

@@ -5,5 +5,5 @@ class Elastic:
   def __init__(self) -> None:
     self.elastic_search = Elasticsearch()
       
-  def save(self, payload):
-    res = self.elastic_search.index(index="analytics", id=1, body=payload)
+  def save(self, payload, id):
+    res = self.elastic_search.index(index="analytics", id=id, body=payload)
