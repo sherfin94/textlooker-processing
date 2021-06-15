@@ -7,3 +7,4 @@ class Elastic:
       
   def save(self, payload, id):
     res = self.elastic_search.index(index="analytics", id=id, body=payload)
+    print(res)

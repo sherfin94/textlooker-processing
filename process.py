@@ -25,18 +25,24 @@ class TextProcessor:
     content = text['content']
     author = text['author']
     date = text.get('date')
+    created_at = text['created_at']
+    updated_at = text['updated_at']
+    deleted_at = text['deleted_at']
 
 
-    self.save(id, content, author, date, people, gpe, tokens, source_id)
+    self.save(id, content, author, date, people, gpe, tokens, source_id, created_at, updated_at, deleted_at)
 
-  def save(self, id, content, author, date, people, gpe, tokens, source_id):
+  def save(self, id, content, author, date, people, gpe, tokens, source_id, created_at, updated_at, deleted_at):
     payload = {
       'content': content,
       'author': author,
       'people': people,
       'gpe': gpe,
       'tokens': tokens,
-      'source_id': source_id
+      'source_id': source_id,
+      'created_at': created_at,
+      'updated_at': updated_at,
+      'deleted_at': deleted_at
     }
     if date: payload['date'] = date
 
