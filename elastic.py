@@ -1,10 +1,13 @@
 from datetime import datetime
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
 class Elastic:
   def __init__(self) -> None:
     self.elastic_search = Elasticsearch()
       
-  def save(self, payload, id):
-    res = self.elastic_search.index(index="analytics", id=id, body=payload)
+  def save(self, payload_generator, text_set):
+    actions = list(payload_generator(text_set))
+    print(actions[0])
+    res = bulk(self.elastic_search, actions)
     print(res)

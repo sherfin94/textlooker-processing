@@ -13,7 +13,7 @@ class TextProcessor:
     result = []
     for token in doc:
       lexeme = self.nlp.vocab[token.text]
-      if not lexeme.is_stop and not lexeme.is_punct: result.append(token.text)
+      if not lexeme.is_stop and not lexeme.is_punct and lexeme.text != '�' : result.append(token.text)
     return result
   
   def generate_entities(self, doc):
@@ -29,25 +29,32 @@ class TextProcessor:
     return entities
 
 
-  def process(self, text):
-    doc = self.nlp(text['content'])
-    tokens = self.tokens(doc)
-    id = text['id']
-    source_id = text['source_id']
-    content = text['content']
-    author = text['author']
-    date = text['date']
-    created_at = text['created_at']
-    updated_at = text['updated_at']
-    deleted_at = text['deleted_at']
+  def process(self, text_set):
+    self.elastic.save(self.payload_generator, text_set)
 
-    entities = self.generate_entities(doc)
-    print(entities)
+  def payload_generator(self, text_set):
+    contents = [text['content'] for text in text_set['text_set']]
+    docs = list(self.nlp.pipe(contents))
 
-    self.save(id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities)
+    for index, text in enumerate(text_set['text_set']):
+      doc = docs[index]
+      tokens = self.tokens(doc)
+      id = text['id']
+      source_id = text['source_id']
+      content = text['content']
+      author = text['author']
+      date = text['date']
+      created_at = text['created_at']
+      updated_at = text['updated_at']
+      deleted_at = text['deleted_at']
 
-  def save(self, id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities):
-    payload = {
+      entities = self.generate_entities(doc)
+
+      yield self.create_payload(id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities)
+
+
+  def create_payload(self, id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities):
+    source = {
       'content': content,
       'author': author,
       'tokens': tokens,
@@ -57,9 +64,12 @@ class TextProcessor:
       'updated_at': updated_at,
       'deleted_at': deleted_at
     }
+    source.update(entities)
 
-    payload.update(entities)
+    payload = {
+      '_index':'analytics',
+      '_op_type': 'index',
+      '_source': source
+    }
 
-    print(payload)
-
-    self.elastic.save(payload, id)
+    return payload
