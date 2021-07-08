@@ -1,0 +1,6 @@
+elasticsearch>=7.0.0,<8.0.0
+confluent-kafka==1.6.0
+pip
+setuptools
+wheel
+spacy==3.0.6

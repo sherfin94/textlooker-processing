@@ -8,6 +8,4 @@ class Elastic:
       
   def save(self, payload_generator, text_set):
     actions = list(payload_generator(text_set))
-    print(actions[0])
     res = bulk(self.elastic_search, actions)
-    print(res)
