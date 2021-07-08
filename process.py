@@ -4,7 +4,7 @@ from elastic import Elastic
 
 class TextProcessor:
   def __init__(self) -> None:
-    spacy.prefer_gpu()
+    # spacy.prefer_gpu()
     self.nlp = spacy.load("en_core_web_sm")
     self.entity_types = ['PERSON', 'NORP', 'FAC', 'ORG', 'GPE', 'LOC', 'PRODUCT', 'EVENT', 'WORK_OF_ART', 'LAW', 'LANGUAGE', 'DATE_TOKENS', 'TIME', 'PERCENT', 'MONEY', 'QUANTITY', 'ORDINAL', 'CARDINAL']
     self.elastic = Elastic()
