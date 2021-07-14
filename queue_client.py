@@ -3,8 +3,9 @@ import sys
 import json
 
 class Queue:
-  def __init__(self, process_text) -> None:
+  def __init__(self, process_text, log_textset_error) -> None:
     self.process_text = process_text
+    self.log_textset_error = log_textset_error
     self.running = True
     conf = {
       'bootstrap.servers': 'localhost:9092',
@@ -34,9 +35,14 @@ class Queue:
           elif message.error():
             raise KafkaException(message.error())
         else:
-          text = json.loads(message.value())
-          self.process_text(text)
-          self.consumer.commit()
+          try:
+            text = json.loads(message.value())
+            self.process_text(text)
+            raise Exception("Yo boys")
+          except Exception as exception:
+            self.log_textset_error(exception, text)
+          finally:
+            self.consumer.commit()
     finally:
       # Close down consumer to commit final offsets.
       self.consumer.close()

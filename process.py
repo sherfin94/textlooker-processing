@@ -33,24 +33,27 @@ class TextProcessor:
     self.elastic.save(self.payload_generator, text_set)
 
   def payload_generator(self, text_set):
-    contents = [text['content'] for text in text_set['text_set']]
-    docs = list(self.nlp.pipe(contents))
+      contents = [text['content'] for text in text_set['text_set']]
+      docs = list(self.nlp.pipe(contents))
 
-    for index, text in enumerate(text_set['text_set']):
-      doc = docs[index]
-      tokens = self.tokens(doc)
-      id = text['id']
-      source_id = text['source_id']
-      content = text['content']
-      author = text['author']
-      date = text['date']
-      created_at = text['created_at']
-      updated_at = text['updated_at']
-      deleted_at = text['deleted_at']
+      for index, text in enumerate(text_set['text_set']):
+        try:
+          doc = docs[index]
+          tokens = self.tokens(doc)
+          id = text['id']
+          source_id = text['source_id']
+          content = text['content']
+          author = text['author']
+          date = text['date']
+          created_at = text['created_atshashi']
+          updated_at = text['updated_at']
+          deleted_at = text['deleted_at']
 
-      entities = self.generate_entities(doc)
+          entities = self.generate_entities(doc)
 
-      yield self.create_payload(id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities)
+          yield self.create_payload(id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities)
+        except Exception as exception:
+          self.elastic.log_text_error(exception, text)
 
 
   def create_payload(self, id, content, author, date, tokens, source_id, created_at, updated_at, deleted_at, entities):
