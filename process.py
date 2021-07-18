@@ -45,7 +45,7 @@ class TextProcessor:
           content = text['content']
           author = text['author']
           date = text['date']
-          created_at = text['created_atshashi']
+          created_at = text['created_at']
           updated_at = text['updated_at']
           deleted_at = text['deleted_at']
 
